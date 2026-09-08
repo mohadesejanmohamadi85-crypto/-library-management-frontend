@@ -21,7 +21,8 @@ loginForm.addEventListener("submit", (event) => {
   }
   loginBtn.disabled = true;
   loginBtn.textContent = "در حال ورود... ";
-  fetch("https://karyar-library-management-system.liara.run/api/auth/login", {
+  console.log(emailInput.value,passwordInput.value)
+  fetch("https://haditabatabaei.dev/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
