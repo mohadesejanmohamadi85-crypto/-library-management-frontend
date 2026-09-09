@@ -1,11 +1,20 @@
 let userNameElement = document.querySelector("#userName");
 let availableBooksElement = document.querySelector("#availableBooks");
 let activeLoansElement = document.querySelector("#activeLoans");
+let studentName = document.querySelector("#studentName");
 let logoutBtn = document.querySelector("#logoutBtn");
-fetch("https://karyar-library-management-system.liara.run/api/books", {
+const token = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("token="))
+  ?.split("=")[1];
+if (!token) {
+  window.location.href = "login.html";
+}
+console.log("توکن:", token);
+fetch("https://haditabatabaei.dev/api/books", {
   method: "GET",
   headers: {
-    "authorization": `Bearer ${token}`,
+    authorization: `Bearer ${token}`,
   },
 })
   .then((response) => {
@@ -18,17 +27,20 @@ fetch("https://karyar-library-management-system.liara.run/api/books", {
   })
   .then((booksData) => {
     console.log(booksData);
-    let booksCount = booksData.length;
-    availableBooksElement.textContent = booksCount;
+    if (booksData && booksData.data) {
+      let booksCount = booksData.data.length;
+      console.log(booksCount);
+      availableBooksElement.textContent = booksCount;
+    }
   })
   .catch((error) => {
     console.log("خطا:", error.message);
   });
 
-fetch("https://karyar-library-management-system.liara.run/api/loans/my-loans", {
+fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   method: "GET",
   headers: {
-    "authorization": `Bearer ${token}`,
+    authorization: `Bearer ${token}`,
   },
 })
   .then((response) => {
@@ -41,16 +53,18 @@ fetch("https://karyar-library-management-system.liara.run/api/loans/my-loans", {
   })
   .then((loansData) => {
     console.log(loansData);
-    let activeLoansCount = loansData.length;
-    activeLoansElement.textContent = activeLoansCount;
+    if (loansData && loansData.data) {
+      let activeLoansCount = loansData.data.length;
+      activeLoansElement.textContent = activeLoansCount;
+    }
   })
   .catch((error) => {
     console.log("خطا:", error.message);
   });
-fetch("https://karyar-library-management-system.liara.run/api/auth/me", {
+fetch("https://haditabatabaei.dev/api/auth/me", {
   method: "GET",
   headers: {
-    "authorization": `Bearer ${token}`,
+    authorization: `Bearer ${token}`,
   },
 })
   .then((response) => {
@@ -63,8 +77,12 @@ fetch("https://karyar-library-management-system.liara.run/api/auth/me", {
   })
   .then((userData) => {
     console.log(userData);
-    let userName = userData.name;
-    userNameElement.textContent = userName;
+    if (userData && userData.data && userData.data.user) {
+      let userName = userData.data.user.firstName;
+      console.log(userName);
+      userNameElement.textContent = userName;
+      studentName.textContent = userName;
+    }
   })
   .catch((error) => {
     console.log("خطا:", error.message);
