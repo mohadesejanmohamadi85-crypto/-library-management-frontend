@@ -3,10 +3,7 @@ let availableBooksElement = document.querySelector("#availableBooks");
 let activeLoansElement = document.querySelector("#activeLoans");
 let studentName = document.querySelector("#studentName");
 let logoutBtn = document.querySelector("#logoutBtn");
-const token = document.cookie
-  .split("; ")
-  .find((row) => row.startsWith("token="))
-  ?.split("=")[1];
+const token = document.cookie.split("=")[1];
 if (!token) {
   window.location.href = "login.html";
 }
