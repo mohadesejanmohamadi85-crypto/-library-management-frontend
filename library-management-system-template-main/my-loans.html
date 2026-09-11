@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Loans - Library Management System</title>
     <link rel="stylesheet" href="css/style.css">
+    <script src="./my-loans.js" defer></script>
 </head>
 <body>
     <header class="header">
@@ -19,7 +20,7 @@
                 </nav>
                 <div class="user-info">
                     <div class="user-avatar">S</div>
-                    <span>Student Name</span>
+                    <span id="firstName">Student Name</span>
                 </div>
             </div>
         </div>
@@ -48,8 +49,8 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
+                    <tbody id="tbody">
+                        <!--<tr>
                             <td>
                                 <strong>JavaScript: The Good Parts</strong>
                                 <br>
@@ -87,7 +88,7 @@
                             <td>
                                 <button class="btn btn-secondary btn-sm" disabled>Returned</button>
                             </td>
-                        </tr>
+                        </tr>-->
                     </tbody>
                 </table>
             </div>
@@ -95,11 +96,11 @@
             <!-- Loan Statistics -->
             <div class="grid grid-2">
                 <div class="card stat-card">
-                    <div class="stat-number">2</div>
-                    <div class="stat-label">Active Loans</div>
+                    <div class="stat-number" id="activeLoansCount">2</div>
+                    <div class="stat-label ">Active Loans</div>
                 </div>
                 <div class="card stat-card">
-                    <div class="stat-number">1</div>
+                    <div class="stat-number" id="returnedLoansCount">1</div>
                     <div class="stat-label">Returned Books</div>
                 </div>
             </div>
