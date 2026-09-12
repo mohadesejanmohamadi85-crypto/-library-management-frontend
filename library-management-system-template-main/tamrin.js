@@ -1,3 +1,11 @@
+const token = document.cookie
+  .split("; ")
+  .find((row) => row.startsWith("token="))
+  ?.split("=")[1];
+
+if (token) {
+  window.location.href = "dashboard.html";
+}
 const loginForm = document.querySelector("#loginForm");
 loginForm.addEventListener("submit", (event) => {
   event.preventDefault();

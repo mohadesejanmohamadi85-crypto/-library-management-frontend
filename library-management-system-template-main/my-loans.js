@@ -88,3 +88,9 @@ function returnBook(loanId) {
       alert("خطا: " + error.message);
     });
 }
+let logoutBtn = document.querySelector("#logoutBtn");
+logoutBtn.addEventListener("click", (event) => {
+  event.preventDefault();
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = "login.html";
+});
