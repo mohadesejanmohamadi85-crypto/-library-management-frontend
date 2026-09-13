@@ -5,12 +5,17 @@ const token = document.cookie
 if (!token) {
   window.location.href = "login.html";
 }
+function getAuthHeaders() {
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
 const cacheKey = "booksData";
 const cacheDuration = 5 * 60 * 1000;
 const container = document.querySelector(".grid");
 let userId = null;
 fetch("https://haditabatabaei.dev/api/auth/me", {
-  headers: { authorization: `Bearer ${token}` },
+  headers: getAuthHeaders(),
 })
   .then((response) => response.json())
   .then((userData) => {
@@ -20,16 +25,20 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
       userNameElement.textContent = userName;
     }
     userId = userData.data.user.id;
-    console.log("userId:", userId);
   })
   .catch((error) =>
     console.error("خطا در دریافت اطلاعات کاربر:", error.message),
   );
 function fetchBooks() {
   fetch("https://haditabatabaei.dev/api/books", {
-    headers: { authorization: `Bearer ${token}` },
+    headers: getAuthHeaders(),
   })
     .then((response) => {
+      if (response.status === 401) {
+        document.cookie = "token=; path=/; max-age=0";
+        window.location.href = "login.html";
+        return;
+      }
       if (response.ok) return response.json();
       return response.json().then((err) => {
         throw new Error(err.message || "خطا در دریافت کتاب‌ها");
@@ -57,12 +66,12 @@ function displayBooks(data) {
         book.availableCopies > 0 ? "status-available" : "status-unavailable";
       const statusText = book.availableCopies > 0 ? "Available" : "Unavailable";
       card.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-          <h3 style="margin: 0; color: #2c3e50;">${book.title}</h3>
-          <span class="status ${statusClass}">${statusText}</span>
+        <h3 style="margin: 0; color: #2c3e50;">${book.title}</h3>
+        <span class="status ${statusClass}">${statusText}</span>
         </div>
         <p style="color: #666; margin-bottom: 0.5rem;"><strong>Author:</strong> ${book.author}</p>
         <p style="color: #666; margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>
-        <p style="color: #666; margin-bottom: 0.5rem;"><strong>Category:</strong> ${book.category.name}</p>
+        <p style="color: #666; margin-bottom: 0.5rem;"><strong>Category:</strong> ${book.category?.name || "نامشخص"}</p>
         <p style="color: #666; margin-bottom: 1rem;"><strong>Available Copies:</strong> ${book.availableCopies}</p>
         <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #555;">${book.description || ""}</p>
         <div style="display: flex; gap: 0.5rem;">
@@ -71,7 +80,6 @@ function displayBooks(data) {
               ? `<button class="btn btn-primary btn-sm" data-id="${book.id}">Borrow Book</button>`
               : `<button class="btn btn-secondary btn-sm" disabled>Not Available</button>`
           }
-          <button class="btn btn-secondary btn-sm">View Details</button>
         </div>`;
       const borrowButton = card.querySelector(".btn-primary");
       if (borrowButton) {
@@ -91,7 +99,7 @@ function borrowBook(bookId) {
   fetch("https://haditabatabaei.dev/api/loans", {
     method: "POST",
     headers: {
-      authorization: `Bearer ${token}`,
+      ...getAuthHeaders(),
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -102,13 +110,17 @@ function borrowBook(bookId) {
     }),
   })
     .then((response) => {
+      if (response.status === 401) {
+        document.cookie = "token=; path=/; max-age=0";
+        window.location.href = "login.html";
+        return;
+      }
       if (response.ok) return response.json();
       return response.json().then((err) => {
         throw new Error(err.message || "خطا در امانت گرفتن کتاب");
       });
     })
     .then((data) => {
-      console.log("کتاب امانت گرفته شد:", data);
       localStorage.removeItem(cacheKey);
       location.reload();
     })
@@ -131,9 +143,10 @@ if (cached) {
   fetchBooks();
 }
 let logoutBtn = document.querySelector("#logoutBtn");
-logoutBtn.addEventListener("click", (event) => {
-  event.preventDefault();
-  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  window.location.href = "login.html";
-});
-
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    document.cookie = "token=; path=/; max-age=0";
+    window.location.href = "login.html";
+  });
+}

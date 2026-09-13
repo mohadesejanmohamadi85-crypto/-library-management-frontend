@@ -470,3 +470,7 @@ body {
     margin-top: 5px;
     min-height: 20px;
 }
+.btn-primary:disabled {
+  opacity: 0.6;
+  background-color: #999;
+}

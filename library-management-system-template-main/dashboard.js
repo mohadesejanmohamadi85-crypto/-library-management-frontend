@@ -10,40 +10,46 @@ const token = document.cookie
 if (!token) {
   window.location.href = "login.html";
 }
-console.log("توکن:", token);
 fetch("https://haditabatabaei.dev/api/books", {
   method: "GET",
   headers: {
-    authorization: `Bearer ${token}`,
+    "Authorization": `Bearer ${token}`,
   },
 })
   .then((response) => {
+    if (response.status === 401) {
+      document.cookie = "token=; path=/; max-age=0";
+      window.location.href = "login.html";
+      return;
+    }
     if (response.ok) {
       return response.json();
     }
     return response.json().then((errorData) => {
-      throw new Error(errorData.message);
+      throw new Error(errorData.message || "خطا در ورود");
     });
   })
   .then((booksData) => {
-    console.log(booksData);
     if (booksData && booksData.data) {
       let booksCount = booksData.data.length;
-      console.log(booksCount);
       availableBooksElement.textContent = booksCount;
     }
   })
   .catch((error) => {
     console.log("خطا:", error.message);
   });
-
 fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   method: "GET",
   headers: {
-    authorization: `Bearer ${token}`,
+    "Authorization": `Bearer ${token}`,
   },
 })
   .then((response) => {
+    if (response.status === 401) {
+      document.cookie = "token=; path=/; max-age=0";
+      window.location.href = "login.html";
+      return;
+    }
     if (response.ok) {
       return response.json();
     }
@@ -52,7 +58,6 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
     });
   })
   .then((loansData) => {
-    console.log(loansData);
     if (loansData && loansData.data) {
       let activeLoansCount = loansData.data.length;
       activeLoansElement.textContent = activeLoansCount;
@@ -64,10 +69,15 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
 fetch("https://haditabatabaei.dev/api/auth/me", {
   method: "GET",
   headers: {
-    authorization: `Bearer ${token}`,
+    "Authorization": `Bearer ${token}`,
   },
 })
   .then((response) => {
+    if (response.status === 401) {
+      document.cookie = "token=; path=/; max-age=0";
+      window.location.href = "login.html";
+      return;
+    }
     if (response.ok) {
       return response.json();
     }
@@ -76,10 +86,8 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
     });
   })
   .then((userData) => {
-    console.log(userData);
     if (userData && userData.data && userData.data.user) {
       let userName = userData.data.user.firstName;
-      console.log(userName);
       userNameElement.textContent = userName;
       studentName.textContent = userName;
     }
@@ -89,6 +97,6 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
   });
 logoutBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "token=; path=/; max-age=0";
   window.location.href = "login.html";
 });

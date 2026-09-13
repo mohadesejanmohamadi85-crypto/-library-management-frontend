@@ -5,8 +5,13 @@ const token = document.cookie
 if (!token) {
   window.location.href = "login.html";
 }
+function getAuthHeaders() {
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
 fetch("https://haditabatabaei.dev/api/auth/me", {
-  headers: { authorization: `Bearer ${token}` },
+  headers: getAuthHeaders() ,
 })
   .then((response) => response.json())
   .then((userData) => {
@@ -19,9 +24,14 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
   .catch((error) => console.log("خطا:", error.message));
 fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   method: "GET",
-  headers: { authorization: `Bearer ${token}` },
+  headers:  getAuthHeaders(),
 })
   .then((response) => {
+    if (response.status === 401) {
+      document.cookie = "token=; path=/; max-age=0";
+      window.location.href = "login.html";
+      return;
+    }
     if (response.ok) return response.json();
     return response.json().then((errorData) => {
       throw new Error(errorData.message || "خطا در دریافت امانت‌ها");
@@ -40,6 +50,7 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
     if (activeElement) activeElement.textContent = activeCount;
     if (returnedElement) returnedElement.textContent = returnedCount;
     const tbody = document.querySelector("#tbody");
+    if(!tbody) return;
     tbody.innerHTML = "";
     loans.forEach((loan) => {
       const book = loan.book;
@@ -70,16 +81,20 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
 function returnBook(loanId) {
   fetch(`https://haditabatabaei.dev/api/loans/${loanId}/return`, {
     method: "POST",
-    headers: { authorization: `Bearer ${token}` },
+    headers:  getAuthHeaders(),
   })
     .then((response) => {
+      if (response.status === 401) {
+        document.cookie = "token=; path=/; max-age=0";
+        window.location.href = "login.html";
+        return;
+      }
       if (response.ok) return response.json();
       return response.json().then((errorData) => {
         throw new Error(errorData.message || "خطا در بازگرداندن");
       });
     })
     .then((data) => {
-      console.log("کتاب برگردانده شد:", data);
       alert("کتاب با موفقیت بازگردانده شد");
       location.reload();
     })
@@ -89,8 +104,10 @@ function returnBook(loanId) {
     });
 }
 let logoutBtn = document.querySelector("#logoutBtn");
+if(logoutBtn){
 logoutBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  document.cookie = "token=; path=/; max-age=0";
   window.location.href = "login.html";
 });
+}

@@ -2,9 +2,11 @@ const token = document.cookie
   .split("; ")
   .find((row) => row.startsWith("token="))
   ?.split("=")[1];
-
 if (token) {
   window.location.href = "dashboard.html";
+}
+function isValidEmail(email) {
+  return email.includes("@") && email.split("@")[1].includes(".");
 }
 const loginForm = document.querySelector("#loginForm");
 loginForm.addEventListener("submit", (event) => {
@@ -19,8 +21,13 @@ loginForm.addEventListener("submit", (event) => {
   passwordError.textContent = "";
   alertContainer.textContent = "";
   alertContainer.classList.remove("alertError");
-  if (!emailInput.value) {
+  const emailValue = emailInput.value.trim();
+  if (!emailValue) {
     emailError.textContent = "لطفا ایمیل خود را وارد کنید";
+    return;
+  }
+  if (!isValidEmail(emailValue)) {
+    emailError.textContent = "فرمت ایمیل معتبر نیست";
     return;
   }
   if (!passwordInput.value) {
@@ -28,15 +35,14 @@ loginForm.addEventListener("submit", (event) => {
     return;
   }
   loginBtn.disabled = true;
-  loginBtn.textContent = "در حال ورود... ";
-  console.log(emailInput.value,passwordInput.value)
+  loginBtn.textContent = "ورود";
   fetch("https://haditabatabaei.dev/api/auth/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: emailInput.value,
+      email: emailValue,
       password: passwordInput.value,
     }),
   })
@@ -49,7 +55,6 @@ loginForm.addEventListener("submit", (event) => {
       });
     })
     .then((data) => {
-      console.log(data);
       const token = data.token;
       document.cookie = `token=${token}; path=/; max-age=604800`;
       window.location.href = "dashboard.html";
