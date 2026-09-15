@@ -59,8 +59,9 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   })
   .then((loansData) => {
     if (loansData && loansData.data) {
-      let activeLoansCount = loansData.data.length;
-      activeLoansElement.textContent = activeLoansCount;
+      let activeLoansCount = loansData.data;
+      let activeLoans=activeLoansCount.filter((loan)=> loan.status==="active");
+      activeLoansElement.textContent =activeLoans.length;
     }
   })
   .catch((error) => {
