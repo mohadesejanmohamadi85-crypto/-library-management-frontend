@@ -10,11 +10,14 @@ const token = document.cookie
 if (!token) {
   window.location.href = "login.html";
 }
+function getAuthHeaders() {
+  return {
+    Authorization: `Bearer ${token}`,
+  };
+}
 fetch("https://haditabatabaei.dev/api/books", {
   method: "GET",
-  headers: {
-    "Authorization": `Bearer ${token}`,
-  },
+  headers: getAuthHeaders(),
 })
   .then((response) => {
     if (response.status === 401) {
@@ -40,9 +43,7 @@ fetch("https://haditabatabaei.dev/api/books", {
   });
 fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   method: "GET",
-  headers: {
-    "Authorization": `Bearer ${token}`,
-  },
+  headers:getAuthHeaders(),
 })
   .then((response) => {
     if (response.status === 401) {
@@ -69,9 +70,7 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   });
 fetch("https://haditabatabaei.dev/api/auth/me", {
   method: "GET",
-  headers: {
-    "Authorization": `Bearer ${token}`,
-  },
+  headers:getAuthHeaders(),
 })
   .then((response) => {
     if (response.status === 401) {
