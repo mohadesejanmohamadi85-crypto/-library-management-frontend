@@ -1,8 +1,8 @@
-let userNameElement = document.querySelector("#userName");
-let availableBooksElement = document.querySelector("#availableBooks");
-let activeLoansElement = document.querySelector("#activeLoans");
-let studentName = document.querySelector("#studentName");
-let logoutBtn = document.querySelector("#logoutBtn");
+const userNameElement = document.querySelector("#userName");
+const availableBooksElement = document.querySelector("#availableBooks");
+const activeLoansElement = document.querySelector("#activeLoans");
+const studentName = document.querySelector("#studentName");
+const logoutBtn = document.querySelector("#logoutBtn");
 const token = document.cookie
   .split("; ")
   .find((row) => row.startsWith("token="))
@@ -15,14 +15,20 @@ function getAuthHeaders() {
     Authorization: `Bearer ${token}`,
   };
 }
+function handleUnauthorized(response) {
+  if (response.status === 401) {
+    document.cookie = "token=; path=/; max-age=0";
+    window.location.href = "login.html";
+    return true;
+  }
+  return false;
+}
 fetch("https://haditabatabaei.dev/api/books", {
   method: "GET",
   headers: getAuthHeaders(),
 })
   .then((response) => {
-    if (response.status === 401) {
-      document.cookie = "token=; path=/; max-age=0";
-      window.location.href = "login.html";
+    if(handleUnauthorized(response)){
       return;
     }
     if (response.ok) {
@@ -46,9 +52,7 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   headers:getAuthHeaders(),
 })
   .then((response) => {
-    if (response.status === 401) {
-      document.cookie = "token=; path=/; max-age=0";
-      window.location.href = "login.html";
+    if(handleUnauthorized(response)){
       return;
     }
     if (response.ok) {
@@ -73,9 +77,7 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
   headers:getAuthHeaders(),
 })
   .then((response) => {
-    if (response.status === 401) {
-      document.cookie = "token=; path=/; max-age=0";
-      window.location.href = "login.html";
+    if(handleUnauthorized(response)){
       return;
     }
     if (response.ok) {

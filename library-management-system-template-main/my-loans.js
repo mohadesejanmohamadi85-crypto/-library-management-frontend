@@ -10,6 +10,14 @@ function getAuthHeaders() {
     Authorization: `Bearer ${token}`,
   };
 }
+function handleUnauthorized(response) {
+  if (response.status === 401) {
+    document.cookie = "token=; path=/; max-age=0";
+    window.location.href = "login.html";
+    return true;
+  }
+  return false;
+}
 fetch("https://haditabatabaei.dev/api/auth/me", {
   headers: getAuthHeaders() ,
 })
@@ -27,9 +35,7 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   headers:  getAuthHeaders(),
 })
   .then((response) => {
-    if (response.status === 401) {
-      document.cookie = "token=; path=/; max-age=0";
-      window.location.href = "login.html";
+    if(handleUnauthorized(response)){
       return;
     }
     if (response.ok) return response.json();
@@ -84,10 +90,8 @@ function returnBook(loanId) {
     headers:  getAuthHeaders(),
   })
     .then((response) => {
-      if (response.status === 401) {
-        document.cookie = "token=; path=/; max-age=0";
-        window.location.href = "login.html";
-        return;
+      if(handleUnauthorized(response)){
+      return;
       }
       if (response.ok) return response.json();
       return response.json().then((errorData) => {

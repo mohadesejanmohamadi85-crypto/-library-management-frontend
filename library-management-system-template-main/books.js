@@ -14,6 +14,14 @@ const cacheKey = "booksData";
 const cacheDuration = 5 * 60 * 1000;
 const container = document.querySelector(".grid");
 let userId = null;
+function handleUnauthorized(response) {
+  if (response.status === 401) {
+    document.cookie = "token=; path=/; max-age=0";
+    window.location.href = "login.html";
+    return true;
+  }
+  return false;
+}
 fetch("https://haditabatabaei.dev/api/auth/me", {
   headers: getAuthHeaders(),
 })
@@ -34,10 +42,8 @@ function fetchBooks() {
     headers: getAuthHeaders(),
   })
     .then((response) => {
-      if (response.status === 401) {
-        document.cookie = "token=; path=/; max-age=0";
-        window.location.href = "login.html";
-        return;
+      if(handleUnauthorized(response)){
+      return;
       }
       if (response.ok) return response.json();
       return response.json().then((err) => {
@@ -110,10 +116,8 @@ function borrowBook(bookId) {
     }),
   })
     .then((response) => {
-      if (response.status === 401) {
-        document.cookie = "token=; path=/; max-age=0";
-        window.location.href = "login.html";
-        return;
+      if(handleUnauthorized(response)){
+      return;
       }
       if (response.ok) return response.json();
       return response.json().then((err) => {
