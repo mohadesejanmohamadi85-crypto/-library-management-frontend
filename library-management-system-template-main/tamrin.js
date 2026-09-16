@@ -9,7 +9,7 @@ function isValidEmail(email) {
   return email.includes("@") && email.split("@")[1].includes(".");
 }
 const loginForm = document.querySelector("#loginForm");
-loginForm.addEventListener("submit", (event) => {
+loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   const emailInput = document.querySelector("#email");
   const passwordInput = document.querySelector("#password");
@@ -36,36 +36,31 @@ loginForm.addEventListener("submit", (event) => {
   }
   loginBtn.disabled = true;
   loginBtn.textContent = "ورود";
-  fetch("https://haditabatabaei.dev/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: emailValue,
-      password: passwordInput.value,
-    }),
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      return response.json().then((errorData) => {
-        throw new Error(errorData.message || "خطا در ورود");
-      });
-    })
-    .then((data) => {
-      const token = data.token;
-      document.cookie = `token=${token}; path=/; max-age=604800`;
-      window.location.href = "dashboard.html";
-    })
-    .catch((error) => {
-      console.log("خطا:", error.message);
-      alertContainer.textContent = "خطا: " + error.message;
-      alertContainer.classList.add("alertError");
-    })
-    .finally(() => {
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Login";
+  try {
+    const response = await fetch("https://haditabatabaei.dev/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: emailValue,
+        password: passwordInput.value,
+      }),
     });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "خطا در ورود");
+    }
+    const data = await response.json();
+    const token = data.token;
+    document.cookie = `token=${token}; path=/; max-age=604800`;
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    console.log("خطا:", error.message);
+    alertContainer.textContent = "خطا: " + error.message;
+    alertContainer.classList.add("alertError");
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = "ورود";
+  }
 });
