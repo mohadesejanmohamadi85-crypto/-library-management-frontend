@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Loans - Library Management System</title>
+    <title>امانت‌های من - سیستم مدیریت کتابخانه</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="./my-loans.js" defer></script>
 </head>
@@ -11,16 +11,16 @@
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <div class="logo">📚 Library Management</div>
+                <div class="logo">📚 مدیریت کتابخانه</div>
                 <nav class="nav">
-                    <a href="dashboard.html">Dashboard</a>
-                    <a href="books.html">Browse Books</a>
-                    <a href="my-loans.html" class="active">My Loans</a>
-                    <a href="login.html">Logout</a>
+                    <a href="dashboard.html">داشبورد</a>
+                    <a href="books.html">کتاب ها</a>
+                    <a href="my-loans.html" class="active">امانت های من</a>
+                    <a href="login.html">خروج</a>
                 </nav>
                 <div class="user-info">
-                    <div class="user-avatar">M</div>
-                    <span id="firstName" class="user-Name">Student Name</span>
+                    <div class="user-avatar">م</div>
+                    <span id="firstName" class="user-Name">دانشجو</span>
                 </div>
             </div>
         </div>
@@ -28,23 +28,23 @@
 
     <main class="main-content">
         <div class="container">
-            <h1>My Loans</h1>
-            <p style="color: #2b2828; margin-bottom: 2rem;">View and manage your borrowed books.</p>
+            <h1>امانت های من</h1>
+            <p style="color: #2b2828; margin-bottom: 1.5rem; font-size: 18px;">کتاب‌های امانت گرفته شده خود را مشاهده و مدیریت کنید.</p>
             <!-- Loans Table -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Your Loans</h2>
-                    <span style="color: #666;">Total: 3 loans</span>
+                    <h2 class="card-title">لیست امانت‌ها</h2>
+                    <span style="color: #666;font-weight: 700; font-size: 20px;"class="loanSummaryText">مجموع: ۳ امانت</span>
                 </div>
                 
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Book Title</th>
-                            <th>Author</th>
-                            <th>Loan Date</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th class="table-th">عنوان کتاب</th>
+                            <th class="table-th">نویسنده</th>
+                            <th class="table-th">تاریخ امانت</th>
+                            <th class="table-th">وضعیت</th>
+                            <th class="table-th">عملیات</th>
                         </tr>
                     </thead>
                     <tbody id="tbody">
@@ -55,14 +55,13 @@
             <div class="grid grid-2">
                 <div class="card stat-card">
                     <div class="stat-number" id="activeLoansCount">2</div>
-                    <div class="stat-label ">Active Loans</div>
+                    <div class="stat-label ">امانت‌های فعال</div>
                 </div>
                 <div class="card stat-card">
                     <div class="stat-number" id="returnedLoansCount">1</div>
-                    <div class="stat-label">Returned Books</div>
+                    <div class="stat-label">کتاب‌های بازگردانده شده</div>
                 </div>
             </div>
-
         </div>
     </main>
 </body>

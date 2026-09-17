@@ -45,6 +45,8 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   })
   .then((loansData) => {
     const loans = loansData.data;
+    const summarySpan=document.querySelector(".loanSummaryText")
+    summarySpan.textContent=`تعداد کل: ${loans.length}`
     let activeCount = 0;
     let returnedCount = 0;
     loans.forEach((loan) => {
@@ -64,7 +66,7 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
       const tableRow = document.createElement("tr");
       tableRow.innerHTML = `<td>
           <strong>${book.title}</strong><br>
-          <small style="color: #666;">ISBN: ${book.isbn}</small>
+          <small style="color: #666; font-size:15px;"> شابک: ${book.isbn}</small>
         </td>
         <td>${book.author}</td>
         <td>${loan.loanDate.split("T")[0]}</td>
@@ -72,8 +74,8 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
         <td>
           ${
             status === "active"
-              ? `<button class="btn btn-success btn-sm return-btn" data-id="${loan.id}">Return</button>`
-              : `<button class="btn btn-secondary btn-sm" disabled>Returned</button>`
+              ? `<button class="btn btn-success btn-sm return-btn" data-id="${loan.id}">بازگرداندن کتاب</button>`
+              : `<button class="btn btn-secondary btn-sm" disabled>بازگردانده شده</button>`
           }
         </td>`;
       const returnButton = tableRow.querySelector(".return-btn");

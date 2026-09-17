@@ -42,8 +42,8 @@ function fetchBooks() {
     headers: getAuthHeaders(),
   })
     .then((response) => {
-      if(handleUnauthorized(response)){
-      return;
+      if (handleUnauthorized(response)) {
+        return;
       }
       if (response.ok) return response.json();
       return response.json().then((err) => {
@@ -70,21 +70,21 @@ function displayBooks(data) {
       card.className = "card";
       const statusClass =
         book.availableCopies > 0 ? "status-available" : "status-unavailable";
-      const statusText = book.availableCopies > 0 ? "Available" : "Unavailable";
-      card.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-        <h3 style="margin: 0; color: #2c3e50;">${book.title}</h3>
+      const statusText = book.availableCopies > 0 ? "موجود" : "ناموجود";
+      card.innerHTML = `<div  class="book-header">
+        <h3 class="book-title">${book.title}</h3>
         <span class="status ${statusClass}">${statusText}</span>
         </div>
-        <p style="color: #666; margin-bottom: 0.5rem;"><strong>Author:</strong> ${book.author}</p>
-        <p style="color: #666; margin-bottom: 0.5rem;"><strong>ISBN:</strong> ${book.isbn}</p>
-        <p style="color: #666; margin-bottom: 0.5rem;"><strong>Category:</strong> ${book.category?.name || "نامشخص"}</p>
-        <p style="color: #666; margin-bottom: 1rem;"><strong>Available Copies:</strong> ${book.availableCopies}</p>
-        <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #555;">${book.description || ""}</p>
+        <p class="book-info"><strong>نویسنده:</strong> ${book.author}</p>
+        <p class="book-info"><strong> شابک: </strong>${book.isbn}</p>
+        <p class="book-info"><strong>دسته بندی:</strong> ${book.category?.name || "نامشخص"}</p>
+        <p style=" margin-bottom: 1rem;" class="book-info"><strong>نسخه های موجود:</strong> ${book.availableCopies}</p>
+        <p style="margin-bottom: 1rem; font-size: 1rem; color: #555;">${book.description || ""}</p>
         <div style="display: flex; gap: 0.5rem;">
           ${
             book.availableCopies > 0
-              ? `<button class="btn btn-primary btn-sm" data-id="${book.id}">Borrow Book</button>`
-              : `<button class="btn btn-secondary btn-sm" disabled>Not Available</button>`
+              ? `<button class="btn btn-primary btn-sm" data-id="${book.id}">امانت گرفتن</button>`
+              : `<button class="btn btn-secondary btn-sm" disabled>موجود نیست</button>`
           }
         </div>`;
       const borrowButton = card.querySelector(".btn-primary");
@@ -116,8 +116,8 @@ function borrowBook(bookId) {
     }),
   })
     .then((response) => {
-      if(handleUnauthorized(response)){
-      return;
+      if (handleUnauthorized(response)) {
+        return;
       }
       if (response.ok) return response.json();
       return response.json().then((err) => {
