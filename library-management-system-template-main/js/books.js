@@ -1,31 +1,10 @@
-const token = document.cookie
-  .split("; ")
-  .find((row) => row.startsWith("token="))
-  ?.split("=")[1];
-if (!token) {
-  window.location.href = "login.html";
-}
-function getAuthHeaders() {
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
+import { protectPage,getAuthHeaders,handleUnauthorized,logout,apiGet,apiPost } from "./shared.js";
+const token=protectPage();
 const cacheKey = "booksData";
 const cacheDuration = 5 * 60 * 1000;
 const container = document.querySelector(".grid");
 let userId = null;
-function handleUnauthorized(response) {
-  if (response.status === 401) {
-    document.cookie = "token=; path=/; max-age=0";
-    window.location.href = "login.html";
-    return true;
-  }
-  return false;
-}
-fetch("https://haditabatabaei.dev/api/auth/me", {
-  headers: getAuthHeaders(),
-})
-  .then((response) => response.json())
+  apiGet("https://haditabatabaei.dev/api/auth/me")
   .then((userData) => {
     const userName = userData.data.user.firstName;
     const userNameElement = document.querySelector("#firstName");
@@ -38,18 +17,7 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
     console.error("خطا در دریافت اطلاعات کاربر:", error.message),
   );
 function fetchBooks() {
-  fetch("https://haditabatabaei.dev/api/books", {
-    headers: getAuthHeaders(),
-  })
-    .then((response) => {
-      if (handleUnauthorized(response)) {
-        return;
-      }
-      if (response.ok) return response.json();
-      return response.json().then((err) => {
-        throw new Error(err.message || "خطا در دریافت کتاب‌ها");
-      });
-    })
+  apiGet("https://haditabatabaei.dev/api/books")
     .then((data) => {
       localStorage.setItem(
         cacheKey,
@@ -102,29 +70,12 @@ function borrowBook(bookId) {
     alert("لطفاً چند لحظه صبر کن و دوباره امتحان کن");
     return;
   }
-  fetch("https://haditabatabaei.dev/api/loans", {
-    method: "POST",
-    headers: {
-      ...getAuthHeaders(),
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      bookId: bookId,
-      userId: userId,
-      loanPeriod: 14,
-      dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
-    }),
+  apiPost("https://haditabatabaei.dev/api/loans", {
+    bookId: bookId,
+    userId: userId,
   })
-    .then((response) => {
-      if (handleUnauthorized(response)) {
-        return;
-      }
-      if (response.ok) return response.json();
-      return response.json().then((err) => {
-        throw new Error(err.message || "خطا در امانت گرفتن کتاب");
-      });
-    })
     .then((data) => {
+      alert("کتاب با موفقیت امانت گرفته شد");
       localStorage.removeItem(cacheKey);
       location.reload();
     })
@@ -150,7 +101,6 @@ let logoutBtn = document.querySelector("#logoutBtn");
 if (logoutBtn) {
   logoutBtn.addEventListener("click", (event) => {
     event.preventDefault();
-    document.cookie = "token=; path=/; max-age=0";
-    window.location.href = "login.html";
+    logout()
   });
 }

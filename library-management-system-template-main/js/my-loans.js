@@ -1,27 +1,6 @@
-const token = document.cookie
-  .split("; ")
-  .find((row) => row.startsWith("token="))
-  ?.split("=")[1];
-if (!token) {
-  window.location.href = "login.html";
-}
-function getAuthHeaders() {
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-}
-function handleUnauthorized(response) {
-  if (response.status === 401) {
-    document.cookie = "token=; path=/; max-age=0";
-    window.location.href = "login.html";
-    return true;
-  }
-  return false;
-}
-fetch("https://haditabatabaei.dev/api/auth/me", {
-  headers: getAuthHeaders() ,
-})
-  .then((response) => response.json())
+import { protectPage,getAuthHeaders,handleUnauthorized,logout,apiGet,apiPostNoBody } from "./shared.js";
+const token=protectPage();
+  apiGet("https://haditabatabaei.dev/api/auth/me")
   .then((userData) => {
     const userName = userData.data.user.firstName;
     const userNameElement = document.querySelector("#firstName");
@@ -30,19 +9,7 @@ fetch("https://haditabatabaei.dev/api/auth/me", {
     }
   })
   .catch((error) => console.log("خطا:", error.message));
-fetch("https://haditabatabaei.dev/api/loans/my-loans", {
-  method: "GET",
-  headers:  getAuthHeaders(),
-})
-  .then((response) => {
-    if(handleUnauthorized(response)){
-      return;
-    }
-    if (response.ok) return response.json();
-    return response.json().then((errorData) => {
-      throw new Error(errorData.message || "خطا در دریافت امانت‌ها");
-    });
-  })
+ apiGet("https://haditabatabaei.dev/api/loans/my-loans")
   .then((loansData) => {
     const loans = loansData.data;
     const summarySpan=document.querySelector(".loanSummaryText")
@@ -87,19 +54,7 @@ fetch("https://haditabatabaei.dev/api/loans/my-loans", {
   })
   .catch((error) => console.log(error.message));
 function returnBook(loanId) {
-  fetch(`https://haditabatabaei.dev/api/loans/${loanId}/return`, {
-    method: "POST",
-    headers:  getAuthHeaders(),
-  })
-    .then((response) => {
-      if(handleUnauthorized(response)){
-      return;
-      }
-      if (response.ok) return response.json();
-      return response.json().then((errorData) => {
-        throw new Error(errorData.message || "خطا در بازگرداندن");
-      });
-    })
+   apiPostNoBody(`https://haditabatabaei.dev/api/loans/${loanId}/return`)
     .then((data) => {
       alert("کتاب با موفقیت بازگردانده شد");
       location.reload();
@@ -113,7 +68,6 @@ let logoutBtn = document.querySelector("#logoutBtn");
 if(logoutBtn){
 logoutBtn.addEventListener("click", (event) => {
   event.preventDefault();
-  document.cookie = "token=; path=/; max-age=0";
-  window.location.href = "login.html";
+  logout()
 });
 }
